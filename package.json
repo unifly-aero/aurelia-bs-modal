@@ -17,7 +17,7 @@
   "main": "dist/commonjs/index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/pwkad/aurelia-bs-modal"
+    "url": "http://github.com/atsu85/aurelia-bs-modal"
   },
   "jspm": {
     "main": "index",
