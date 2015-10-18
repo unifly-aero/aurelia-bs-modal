@@ -10,58 +10,115 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-function _defineDecoratedPropertyDescriptor(target, key, descriptors) { var _descriptor = descriptors[key]; if (!_descriptor) return; var descriptor = {}; for (var _key in _descriptor) descriptor[_key] = _descriptor[_key]; descriptor.value = descriptor.initializer.call(target); Object.defineProperty(target, key, descriptor); }
+function _defineDecoratedPropertyDescriptor(target, key, descriptors) { var _descriptor = descriptors[key]; if (!_descriptor) return; var descriptor = {}; for (var _key in _descriptor) descriptor[_key] = _descriptor[_key]; descriptor.value = descriptor.initializer ? descriptor.initializer.call(target) : undefined; Object.defineProperty(target, key, descriptor); }
 
 var _aureliaFramework = require('aurelia-framework');
 
-var _jquery = require('jquery');
+var _bootstrap = require('bootstrap');
 
-var _jquery2 = _interopRequireDefault(_jquery);
+var _bootstrap2 = _interopRequireDefault(_bootstrap);
 
 var Modal = (function () {
   var _instanceInitializers = {};
+  var _instanceInitializers = {};
+
+  _createDecoratedClass(Modal, [{
+    key: 'showing',
+    decorators: [_aureliaFramework.bindable],
+    initializer: function initializer() {
+      return false;
+    },
+    enumerable: true
+  }, {
+    key: 'escapeCallback',
+    decorators: [_aureliaFramework.bindable],
+    initializer: null,
+    enumerable: true
+  }], null, _instanceInitializers);
 
   function Modal(element) {
     _classCallCheck(this, _Modal);
 
     _defineDecoratedPropertyDescriptor(this, 'showing', _instanceInitializers);
 
+    _defineDecoratedPropertyDescriptor(this, 'escapeCallback', _instanceInitializers);
+
+    this.keydownHandler = null;
+
     this.element = element;
   }
 
-  var _Modal = Modal;
-
-  _createDecoratedClass(_Modal, [{
-    key: 'showing',
-    decorators: [_aureliaFramework.bindable],
-    initializer: function () {
-      return false;
-    },
-    enumerable: true
-  }, {
+  _createDecoratedClass(Modal, [{
     key: 'attached',
     value: function attached() {
       var _this = this;
 
-      _jquery2['default'](this.modal).modal({ show: false }).on('show.bs.modal', function () {
+      (0, _bootstrap2['default'])(this.modal).modal({ show: false }).on('show.bs.modal', function () {
         _this.showing = true;
       }).on('hide.bs.modal', function () {
         _this.showing = false;
       });
+      if (this.showing) {
+        this.addEscHandler();
+        this.ensureFocus();
+      }
+    }
+  }, {
+    key: 'detached',
+    value: function detached() {
+      this.removeEscHandler();
     }
   }, {
     key: 'showingChanged',
     value: function showingChanged(newValue) {
       if (newValue) {
-        _jquery2['default'](this.modal).modal('show');
+        this.addEscHandler();
+        (0, _bootstrap2['default'])(this.modal).modal('show');
+        this.ensureFocus();
       } else {
-        _jquery2['default'](this.modal).modal('hide');
+        (0, _bootstrap2['default'])(this.modal).modal('hide');
+        this.removeEscHandler();
+      }
+    }
+  }, {
+    key: 'addEscHandler',
+    value: function addEscHandler() {
+      var _this2 = this;
+
+      if (this.escapeCallback && !this.keydownHandler) {
+        this.keydownHandler = function (e) {
+          if (e.which == 27) {
+            _this2.escapeCallback();
+          }
+        };
+        (0, _bootstrap2['default'])(this.modal).on("keydown.dismiss.bs.modal", this.keydownHandler);
+      }
+    }
+  }, {
+    key: 'removeEscHandler',
+    value: function removeEscHandler() {
+      if (this.keydownHandler) {
+        (0, _bootstrap2['default'])(this.modal).off("keydown.dismiss.bs.modal", this.escapeCallback);
+        this.keydownHandler = null;
+      }
+    }
+  }, {
+    key: 'ensureFocus',
+    value: function ensureFocus() {
+      var _this3 = this;
+
+      var $focused = (0, _bootstrap2['default'])(':focus');
+      if ((0, _bootstrap2['default'])($focused).closest(this.element).length !== 1) {
+        setTimeout(function () {
+          (0, _bootstrap2['default'])(_this3.element).find("input, textarea, select, datalist, keygen, button").eq(0).focus();
+        }, 500);
       }
     }
   }], null, _instanceInitializers);
 
-  Modal = _aureliaFramework.inject(Element)(Modal) || Modal;
-  Modal = _aureliaFramework.customElement('modal')(Modal) || Modal;
+  var _Modal = Modal;
+  Modal = (0, _aureliaFramework.inject)(Element)(Modal) || Modal;
+  Modal = (0, _aureliaFramework.customElement)('modal')(Modal) || Modal;
   return Modal;
 })();
 
