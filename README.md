@@ -98,4 +98,4 @@ This plugin is for the [Aurelia](http://www.aurelia.io/) platform. It sets up a 
 Here are a few samples of the modal in action -
 
 Here is a single modal and a wizard -
-https://github.com/PWKad/aurelia-samples/tree/master/src/modal
+https://github.com/PWKad/aurelia-samples/tree/master/src/modal 
